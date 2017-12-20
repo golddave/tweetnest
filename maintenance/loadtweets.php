@@ -114,7 +114,8 @@
                 $userparam         => $uservalue,
                 'include_rts'      => true,
                 'include_entities' => true,
-                'count'            => $maxCount
+                'count'            => $maxCount,
+                'tweet_mode'       => 'extended
             );
 
             if($sinceID){
@@ -169,14 +170,14 @@
 				if(!$q){
 					dieout(l(bad("DATABASE ERROR: " . $db->error())));
 				}
-				$text = $tweet['text'];
+				$text = $tweet['full_text'];
 				$te   = $tweet['extra'];
 				if(is_string($te)){ $te = @unserialize($tweet['extra']); }
 				if(is_array($te)){
 					// Because retweets might get cut off otherwise
-					$text = (array_key_exists("rt", $te) && !empty($te['rt']) && !empty($te['rt']['screenname']) && !empty($te['rt']['text']))
-						? "RT @" . $te['rt']['screenname'] . ": " . $te['rt']['text']
-						: $tweet['text'];
+					$text = (array_key_exists("rt", $te) && !empty($te['rt']) && !empty($te['rt']['screenname']) && !empty($te['rt']['full_text']))
+						? "RT @" . $te['rt']['screenname'] . ": " . $te['rt']['full_text']
+						: $tweet['full_text'];
 				}
 				$search->index($db->insertID(), $text);
 			}
