@@ -13,7 +13,7 @@ require_once "twitteroauth/config.php";
 		public $dbMap = array(
 			"id_str"       => "tweetid",
 			"created_at"   => "time",
-			"text"         => "text",
+			"full_text"    => "text",
 			"source"       => "source",
 			"coordinates"  => "coordinates",
 			"geo"          => "geo",
@@ -87,7 +87,7 @@ require_once "twitteroauth/config.php";
 				if(array_key_exists($k, $this->dbMap)){
 					$key = $this->dbMap[$k];
 					$val = $v;
-					if(in_array($key, array("text", "source", "tweetid", "id", "id_str"))){
+					if(in_array($key, array("full_text", "source", "tweetid", "id", "id_str"))){
 						$val = (string)$v;
 						// Yes, I pass tweet id as string. It's a loooong number and we don't need to calc with it.
 					} elseif($key == "time"){
@@ -102,7 +102,7 @@ require_once "twitteroauth/config.php";
 						if(array_key_exists($kk, $this->dbMap)){
 							$kkey = $this->dbMap[$kk];
 							$vval = $vv;
-							if(in_array($kkey, array("text", "source", "tweetid", "id", "id_str"))){
+							if(in_array($kkey, array("full_text", "source", "tweetid", "id", "id_str"))){
 								$vval = (string)$vv;
 							} elseif($kkey == "time"){
 								$vval = strtotime($vv);
@@ -123,7 +123,7 @@ require_once "twitteroauth/config.php";
 			}
 			$t['extra'] = $e;
 			$tt = hook("enhanceTweet", $t, true);
-			if(!empty($tt) && is_array($tt) && $tt['text']){
+			if(!empty($tt) && is_array($tt) && $tt['full_text']){
 				$t = $tt;
 			}
 			return $t;
@@ -165,7 +165,7 @@ require_once "twitteroauth/config.php";
 		
 		public function insertQuery($t){
 			global $db;
-			$type = ($t['text'][0] == "@") ? 1 : (preg_match("/RT @\w+/", $t['text']) ? 2 : 0);
-			return "INSERT IGNORE INTO `".DTP."tweets` (`userid`, `tweetid`, `type`, `time`, `text`, `source`, `extra`, `coordinates`, `geo`, `place`, `contributors`) VALUES ('" . $db->s($t['userid']) . "', '" . $db->s($t['tweetid']) . "', '" . $db->s($type) . "', '" . $db->s($t['time']) . "', '" . $db->s($this->entityDecode($t['text'])) . "', '" . $db->s($t['source']) . "', '" . $db->s(serialize($t['extra'])) . "', '" . $db->s(serialize($t['coordinates'])) . "', '" . $db->s(serialize($t['geo'])) . "', '" . $db->s(serialize($t['place'])) . "', '" . $db->s(serialize($t['contributors'])) . "');";
+			$type = ($t['full_text'][0] == "@") ? 1 : (preg_match("/RT @\w+/", $t['full_text']) ? 2 : 0);
+			return "INSERT IGNORE INTO `".DTP."tweets` (`userid`, `tweetid`, `type`, `time`, `text`, `source`, `extra`, `coordinates`, `geo`, `place`, `contributors`) VALUES ('" . $db->s($t['userid']) . "', '" . $db->s($t['tweetid']) . "', '" . $db->s($type) . "', '" . $db->s($t['time']) . "', '" . $db->s($this->entityDecode($t['full_text'])) . "', '" . $db->s($t['source']) . "', '" . $db->s(serialize($t['extra'])) . "', '" . $db->s(serialize($t['coordinates'])) . "', '" . $db->s(serialize($t['geo'])) . "', '" . $db->s(serialize($t['place'])) . "', '" . $db->s(serialize($t['contributors'])) . "');";
 		}
 	}
